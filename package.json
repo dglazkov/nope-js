@@ -1,0 +1,26 @@
+{
+  "name": "nope-js",
+  "version": "0.0.0",
+  "description": "A library that's kind enough to tell you \"No\" when you need it.",
+  "main": " ",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-mocha": "^0.1.10",
+    "mocha": "^2.2.1"
+  },
+  "scripts": {
+    "test": " "
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dglazkov/nope-js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dglazkov/nope-js/issues"
+  },
+  "homepage": "https://github.com/dglazkov/nope-js"
+}
