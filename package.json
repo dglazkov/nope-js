@@ -4,6 +4,7 @@
   "description": "A library that's kind enough to tell you \"No\" when you need it.",
   "main": " ",
   "devDependencies": {
+    "chai": "^2.2.0",
     "gulp": "^3.8.11",
     "karma": "^0.12.31",
     "karma-chrome-launcher": "^0.1.7",
