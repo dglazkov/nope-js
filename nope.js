@@ -10,7 +10,7 @@ function nope() {
 }
 
 function define(prot, key, func) {
-  prot.defineProperty(prot, key, {
+  Object.defineProperty(prot, key, {
     value: func,
     writable: true,
     configurable: true,
