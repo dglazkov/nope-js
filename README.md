@@ -13,4 +13,4 @@ Write tests! :smiley:
 
 ## Requirements
 
-Needs [Chrome 43+](http://updates.html5rocks.com/2015/04/DOM-attributes-now-on-the-prototype) (this is why currently karma is configured to ask for Chrome Canary). If you want to make it for an earlier version or a rendering engine that doesn't keep [DOM properties on prototypes]((http://updates.html5rocks.com/2015/04/DOM-attributes-now-on-the-prototype) ), I am unlikely to take your patches. My apologies -- trying to keep this simple.
+Needs [Chrome 43+](http://updates.html5rocks.com/2015/04/DOM-attributes-now-on-the-prototype) (this is why currently karma is configured to ask for Chrome Canary). If you want to make it for an earlier version of Chrome or a rendering engine that doesn't keep [DOM properties on prototypes]((http://updates.html5rocks.com/2015/04/DOM-attributes-now-on-the-prototype) ), I am unlikely to take your patches. My apologies -- trying to keep this simple. However, would be happy have help to fix any cross-browser problems.
