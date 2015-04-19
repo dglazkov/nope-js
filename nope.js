@@ -32,12 +32,12 @@ define(HTMLDocument.prototype, 'setLifecycleMode', function(mode) {
   lifecycleMode = mode;
 });
 
-function redefineGetter(prot, key, geterSynthesizer) {
+function redefineGetter(prot, key, getterSynthesizer) {
   var descriptor = Object.getOwnPropertyDescriptor(prot, key);
   if (!descriptor || !descriptor.get)
     throw new Error(`Unable to redefine getter ${key} on prototype ${prot}.`);
 
-  descriptor.get = geterSynthesizer(descriptor.get);
+  descriptor.get = getterSynthesizer(descriptor.get);
 
   Object.defineProperty(prot, key, descriptor);
 }
