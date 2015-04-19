@@ -9,6 +9,8 @@ define(HTMLDocument.prototype, 'writeln', nope);
 define(HTMLDocument.prototype, 'open', nope);
 define(HTMLDocument.prototype, 'close', nope);
 
+redefineGetter(HTMLElement.prototype, 'offsetLeft', synthesizeNopeWhenWriting);
+
 function nope() {
   throw new Error('nope');
 }
@@ -30,12 +32,12 @@ define(HTMLDocument.prototype, 'setLifecycleMode', function(mode) {
   lifecycleMode = mode;
 });
 
-function redefineGetter(prot, key, getter) {
+function redefineGetter(prot, key, geterSynthesizer) {
   var descriptor = Object.getOwnPropertyDescriptor(prot, key);
   if (!descriptor || !descriptor.get)
     throw new Error(`Unable to redefine getter ${key} on prototype ${prot}.`);
 
-  descriptor.get = synthesizeNopeWhenWriting(descriptor.get);
+  descriptor.get = geterSynthesizer(descriptor.get);
 
   Object.defineProperty(prot, key, descriptor);
 }
