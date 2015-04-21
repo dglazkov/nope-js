@@ -9,6 +9,44 @@ define(HTMLDocument.prototype, 'writeln', nope);
 define(HTMLDocument.prototype, 'open', nope);
 define(HTMLDocument.prototype, 'close', nope);
 
+var layoutTriggers = {
+  'HTMLDocument': {
+    'getter': [
+      'scrollingElement',
+    ],
+  },
+  'HTMLElement': {
+    'method': [
+      'scrollIntoView',
+    ]
+  },
+  'HTMLButtonElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLFieldSetElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLInputElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLButtonElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLKeygenElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+}
+
 redefineGetter(HTMLElement.prototype, 'offsetLeft', synthesizeNopeWhenWriting);
 
 function nope() {
