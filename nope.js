@@ -14,11 +14,41 @@ var layoutTriggers = {
     'getter': [
       'scrollingElement',
     ],
+    'method': [
+      'execCommand',
+    ]
   },
-  'HTMLElement': {
+  'Element': {
     'method': [
       'scrollIntoView',
-    ]
+      'scrollBy', // experimental
+      'scrollTo', // experimental
+      'getClientRect',
+      'getBoundingClientRect',
+      'computedRole', // experimental
+      'computedName', // experimental
+      'focus',
+    ],
+    'getter': [
+      'offsetLeft',
+      'offsetTop',
+      'offsetWidth',
+      'offsetHeight',
+      'offsetParent',
+      'clientLeft',
+      'clientWidth',
+      'clientHeight',
+      'scrollLeft',
+      'scrollTop',
+      'scrollWidth',
+      'scrollHeight',
+      'innerText',
+      'outerText',
+    ],
+    'setter': [
+      'scrollLeft',
+      'scrollTop',
+    ],
   },
   'HTMLButtonElement': {
     'method': [
@@ -45,6 +75,11 @@ var layoutTriggers = {
       'reportValidity',
     ]
   },
+  'CSSStyleDeclaration': {
+    'method': [
+      'getPropertyValue',
+    ]
+  }
 }
 
 redefineGetter(HTMLElement.prototype, 'offsetLeft', synthesizeNopeWhenWriting);
