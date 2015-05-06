@@ -50,14 +50,41 @@ var layoutTriggers = {
       'scrollTop',
     ],
   },
+  'Range': {
+    'method': [
+      'getClientRects',
+      'getBoundingClientRect',
+    ],
+  },
+  'MouseEvent': {
+    'getter': [
+      'layerX',
+      'layerY',
+      'offsetX',
+      'offsetY',
+    ],
+  },
   'HTMLButtonElement': {
     'method': [
       'reportValidity',
     ]
   },
+  'HTMLDialogElement': {
+    'method': [
+      'showModal',
+    ]
+  },
   'HTMLFieldSetElement': {
     'method': [
       'reportValidity',
+    ]
+  },
+  'HTMLImageElement': {
+    'getter': [
+      'width',
+      'height',
+      'x',
+      'y',
     ]
   },
   'HTMLInputElement': {
@@ -78,6 +105,25 @@ var layoutTriggers = {
   'CSSStyleDeclaration': {
     'method': [
       'getPropertyValue',
+    ]
+  },
+  'Window': {
+    'method': [
+      'scrollBy',
+      'scrollTo',
+    ]
+  },
+  'SVGSVGElement': {
+    'setter': [
+      'currentScale',
+    ]
+  },
+  '@window': { // should these stay on instance?
+    'getter': [
+      'innerHeight',
+      'innerWidth',
+      'scrollX',
+      'scrollY',
     ]
   }
 }
