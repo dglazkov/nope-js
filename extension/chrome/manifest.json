@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "Nope extension",
+  "description": "Dynamically invokes nope on a page",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [{
+    "matches": [ "http://*/", "https://*/" ],
+    "js": [ "background.js" ],
+    "run_at": "document_start"
+  }],
+  "permissions": [
+    "activeTab",
+    "http://*/",
+    "https://*/"
+  ]
+}

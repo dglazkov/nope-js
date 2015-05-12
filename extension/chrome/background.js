@@ -1,0 +1,195 @@
+var nope = function() {
+
+var WRITE_LIFECYCLE_MODE = "write";
+var knownLifecycleModes = [ "read", WRITE_LIFECYCLE_MODE ];
+var lifecycleMode = WRITE_LIFECYCLE_MODE;
+
+define(HTMLDocument.prototype, 'write', nope);
+define(HTMLDocument.prototype, 'writeln', nope);
+define(HTMLDocument.prototype, 'open', nope);
+define(HTMLDocument.prototype, 'close', nope);
+
+var layoutTriggers = {
+  'HTMLDocument': {
+    'getter': [
+      'scrollingElement',
+    ],
+    'method': [
+      'execCommand',
+    ]
+  },
+  'Element': {
+    'method': [
+      'scrollIntoView',
+      'scrollBy', // experimental
+      'scrollTo', // experimental
+      'getClientRect',
+      'getBoundingClientRect',
+      'computedRole', // experimental
+      'computedName', // experimental
+      'focus',
+    ],
+    'getter': [
+      'offsetLeft',
+      'offsetTop',
+      'offsetWidth',
+      'offsetHeight',
+      'offsetParent',
+      'clientLeft',
+      'clientWidth',
+      'clientHeight',
+      'scrollLeft',
+      'scrollTop',
+      'scrollWidth',
+      'scrollHeight',
+      'innerText',
+      'outerText',
+    ],
+    'setter': [
+      'scrollLeft',
+      'scrollTop',
+    ],
+  },
+  'Range': {
+    'method': [
+      'getClientRects',
+      'getBoundingClientRect',
+    ],
+  },
+  'MouseEvent': {
+    'getter': [
+      'layerX',
+      'layerY',
+      'offsetX',
+      'offsetY',
+    ],
+  },
+  'HTMLButtonElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLDialogElement': {
+    'method': [
+      'showModal',
+    ]
+  },
+  'HTMLFieldSetElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLImageElement': {
+    'getter': [
+      'width',
+      'height',
+      'x',
+      'y',
+    ]
+  },
+  'HTMLInputElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLButtonElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'HTMLKeygenElement': {
+    'method': [
+      'reportValidity',
+    ]
+  },
+  'CSSStyleDeclaration': {
+    'method': [
+      'getPropertyValue',
+    ]
+  },
+  'Window': {
+    'method': [
+      'scrollBy',
+      'scrollTo',
+    ]
+  },
+  'SVGSVGElement': {
+    'setter': [
+      'currentScale',
+    ]
+  },
+  '@window': { // should these stay on instance?
+    'getter': [
+      'innerHeight',
+      'innerWidth',
+      'scrollX',
+      'scrollY',
+    ]
+  }
+}
+
+redefineGetter(HTMLElement.prototype, 'offsetLeft', synthesizeNopeWhenWriting);
+redefineGetter(HTMLElement.prototype, 'offsetLeft', synthesizeNopeWhenWriting);
+redefineGetter(HTMLElement.prototype, 'offsetTop', synthesizeNopeWhenWriting);
+redefineGetter(HTMLElement.prototype, 'offsetWidth', synthesizeNopeWhenWriting);
+redefineGetter(HTMLElement.prototype, 'offsetHeight', synthesizeNopeWhenWriting);
+redefineGetter(HTMLElement.prototype, 'offsetParent', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'clientLeft', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'clientWidth', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'clientHeight', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'scrollLeft', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'scrollTop', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'scrollWidth', synthesizeNopeWhenWriting);
+redefineGetter(Element.prototype, 'scrollHeight', synthesizeNopeWhenWriting);
+//redefineGetter(Element.prototype, 'innerText', synthesizeNopeWhenWriting);
+//redefineGetter(Element.prototype, 'outerText', synthesizeNopeWhenWriting);
+
+
+
+function nope() {
+  throw new Error('nope');
+}
+
+function synthesizeNopeWhenWriting(func) {
+  return function() {
+    if (lifecycleMode != WRITE_LIFECYCLE_MODE) {
+      return func.apply(this, arguments);
+    }
+    throw new Error('nope');
+  }
+}
+
+define(HTMLDocument.prototype, 'setLifecycleMode', function(mode) {
+  if (knownLifecycleModes.indexOf(mode) == -1) {
+    throw new Error(`Unknown lifecycle mode. The known modes are: ${knownLifecycleModes}.`);
+    return;
+  }
+  lifecycleMode = mode;
+});
+
+function redefineGetter(prot, key, getterSynthesizer) {
+  var descriptor = Object.getOwnPropertyDescriptor(prot, key);
+  if (!descriptor || !descriptor.get)
+    throw new Error(`Unable to redefine getter ${key} on prototype ${prot}.`);
+
+  descriptor.get = getterSynthesizer(descriptor.get);
+
+  Object.defineProperty(prot, key, descriptor);
+}
+
+function define(prot, key, func) {
+  Object.defineProperty(prot, key, {
+    value: func,
+    writable: true,
+    configurable: true,
+    enumerable: true
+  });
+}
+
+}
+
+var script = document.createElement('script');
+script.textContent = `~${nope}();`;
+document.documentElement.appendChild(script);
+
+
