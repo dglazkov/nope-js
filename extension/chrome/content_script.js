@@ -1,16 +1,5 @@
 var nope = function() {
 
-var terribleIdeas = {
-  'HTMLDocument': {
-    'method': [
-      'write',
-      'writeln',
-      'open',
-      'close'
-    ]
-  }
-}
-
 var layoutTriggers = {
   'Document': {
     'getter': [
@@ -36,10 +25,7 @@ var layoutTriggers = {
       'scrollIntoView',
       'scrollBy', // experimental
       'scrollTo', // experimental
-      'getClientRect',
-      'getBoundingClientRect',
-      'computedRole', // experimental
-      'computedName', // experimental
+      'getClientRects',
       'focus',
     ],
     'getter': [
@@ -59,7 +45,6 @@ var layoutTriggers = {
   'Range': {
     'method': [
       'getClientRects',
-      'getBoundingClientRect',
     ],
   },
   'UIEvent': {
@@ -131,21 +116,25 @@ var layoutTriggers = {
 };
 
 processSpec(layoutTriggers);
-processSpec(terribleIdeas);
-
-var buggyWindowAccessors = [
-  'innerHeight',
-  'innerWidth',
-  'scrollX',
-  'scrollY',
-];
-
+define(Element.prototype, 'getBoundingClientRect', returnEmptyClientRect);
+define(Range.prototype, 'getBoundingClientRect', returnEmptyClientRect);
 
 function returnZero() {
   return 0;
 }
 
-function nil() {
+function returnEmptyClientRect() {
+  return {
+    bottom: 0,
+    height: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    width: 0,
+  }
+}
+
+function doNothing() {
 
 }
 
@@ -156,7 +145,7 @@ function processSpec(spec) {
       redefineGetter(window[objectName].prototype, getterName, returnZero);
     });
     objectSpecs.method && objectSpecs.method.forEach(function(methodName) {
-      define(window[objectName].prototype, methodName, nil);
+      define(window[objectName].prototype, methodName, doNothing);
     });
   });
 }
