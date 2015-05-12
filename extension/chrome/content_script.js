@@ -4,171 +4,149 @@ var WRITE_LIFECYCLE_MODE = "write";
 var knownLifecycleModes = [ "read", WRITE_LIFECYCLE_MODE ];
 var lifecycleMode = WRITE_LIFECYCLE_MODE;
 
-define(HTMLDocument.prototype, 'write', nope);
-define(HTMLDocument.prototype, 'writeln', nope);
-define(HTMLDocument.prototype, 'open', nope);
-define(HTMLDocument.prototype, 'close', nope);
+var terribleIdeas = {
+  'HTMLDocument': {
+    'method': [
+      'write',
+      'writeln',
+      'open',
+      'close'
+    ]
+  }
+}
 
 var layoutTriggers = {
   'Document': {
-    'proto': {
-      'getter': [
-        'scrollingElement',
-      ],
-      'method': [
-        'execCommand',
-      ]
-    }
+    'getter': [
+      'scrollingElement',
+    ],
+    'method': [
+      'execCommand',
+    ]
   },
   'HTMLElement': {
-    'proto': {
-      'getter': [
-        'offsetLeft',
-        'offsetTop',
-        'offsetWidth',
-        'offsetHeight',
-        'offsetParent',
-        'innerText',
-        'outerText',
-      ]
-    }
+    'getter': [
+      'offsetLeft',
+      'offsetTop',
+      'offsetWidth',
+      'offsetHeight',
+      'offsetParent',
+      'innerText',
+      'outerText',
+    ]
   },
   'Element': {
-    'proto': {
-      'method': [
-        'scrollIntoView',
-        'scrollBy', // experimental
-        'scrollTo', // experimental
-        'getClientRect',
-        'getBoundingClientRect',
-        'computedRole', // experimental
-        'computedName', // experimental
-        'focus',
-      ],
-      'getter': [
-        'clientLeft',
-        'clientWidth',
-        'clientHeight',
-        'scrollLeft',
-        'scrollTop',
-        'scrollWidth',
-        'scrollHeight',
-      ],
-      'setter': [
-        'scrollLeft',
-        'scrollTop',
-      ],
-    }
+    'method': [
+      'scrollIntoView',
+      'scrollBy', // experimental
+      'scrollTo', // experimental
+      'getClientRect',
+      'getBoundingClientRect',
+      'computedRole', // experimental
+      'computedName', // experimental
+      'focus',
+    ],
+    'getter': [
+      'clientLeft',
+      'clientWidth',
+      'clientHeight',
+      'scrollLeft',
+      'scrollTop',
+      'scrollWidth',
+      'scrollHeight',
+    ],
+    'setter': [
+      'scrollLeft',
+      'scrollTop',
+    ],
   },
   'Range': {
-    'proto': {
-      'method': [
-        'getClientRects',
-        'getBoundingClientRect',
-      ],
-    }
+    'method': [
+      'getClientRects',
+      'getBoundingClientRect',
+    ],
   },
   'UIEvent': {
-    'proto': {
-      'getter': [
-        'layerX',
-        'layerY',
-      ],
-    }
+    'getter': [
+      'layerX',
+      'layerY',
+    ],
   },
   'MouseEvent': {
-    'proto': {
-      'getter': [
-        'offsetX',
-        'offsetY',
-      ],
-    }
+    'getter': [
+      'offsetX',
+      'offsetY',
+    ],
   },
   'HTMLButtonElement': {
-    'proto': {
-      'method': [
-        'reportValidity',
-      ]
-    }
+    'method': [
+      'reportValidity',
+    ]
   },
   'HTMLDialogElement': {
-    'proto': {
-      'method': [
-        'showModal',
-      ]
-    }
+    'method': [
+      'showModal',
+    ]
   },
   'HTMLFieldSetElement': {
-    'proto': {
-      'method': [
-        'reportValidity',
-      ]
-    }
+    'method': [
+      'reportValidity',
+    ]
   },
   'HTMLImageElement': {
-    'proto': {
-      'getter': [
-        'width',
-        'height',
-        'x',
-        'y',
-      ]
-    }
+    'getter': [
+      'width',
+      'height',
+      'x',
+      'y',
+    ]
   },
   'HTMLInputElement': {
-    'proto': {
-      'method': [
-        'reportValidity',
-      ]
-    }
+    'method': [
+      'reportValidity',
+    ]
   },
   'HTMLButtonElement': {
-    'proto': {
-      'method': [
-        'reportValidity',
-      ]
-    }
+    'method': [
+      'reportValidity',
+    ]
   },
   'HTMLKeygenElement': {
-    'proto': {
-      'method': [
-        'reportValidity',
-      ]
-    }
+    'method': [
+      'reportValidity',
+    ]
   },
   'CSSStyleDeclaration': {
-    'proto': {
-      'method': [
-        'getPropertyValue',
-      ]
-    }
+    'method': [
+      'getPropertyValue',
+    ]
   },
   'Window': {
-    // 'instance': { // should these stay on instance?
-    //   'getter': [
-    //     'innerHeight',
-    //     'innerWidth',
-    //     'scrollX',
-    //     'scrollY',
-    //   ]
-    // },
-    'proto': {
-      'method': [
-        'scrollBy',
-        'scrollTo',
-      ]
-    }
+    'method': [
+      'scrollBy',
+      'scrollTo',
+    ]
   },
   'SVGSVGElement': {
-    'proto': {
-      'setter': [
-        'currentScale',
-      ]
-    }
+    'setter': [
+      'currentScale',
+    ]
   },
 };
 
 processSpec(layoutTriggers);
+processSpec(terribleIdeas);
+
+var buggyWindowAccessors = [
+  'innerHeight',
+  'innerWidth',
+  'scrollX',
+  'scrollY',
+];
+
+buggyWindowAccessors.forEach(function(accessor) {
+  overrideGetterSetter(window, accessor, nope, nope);
+});
 
 function nope() {
   throw new Error('nope');
@@ -193,25 +171,16 @@ define(HTMLDocument.prototype, 'setLifecycleMode', function(mode) {
 
 function processSpec(spec) {
   Object.keys(spec).forEach(function(objectName) {
-    var protoMemberSpecs = spec[objectName].proto;
-    if (protoMemberSpecs) {
-      protoMemberSpecs.getter && protoMemberSpecs.getter.forEach(function(getterName) {
-        redefineGetter(window[objectName].prototype, getterName, synthesizeNopeWhenWriting);
-      });
-      protoMemberSpecs.setter && protoMemberSpecs.setter.forEach(function(setterName) {
-        redefineSetter(window[objectName].prototype, setterName, synthesizeNopeWhenWriting);
-      });
-      protoMemberSpecs.method && protoMemberSpecs.method.forEach(function(methodName) {
-        define(window[objectName].prototype, methodName, nope);
-      });
-    }
-    var instanceMemberSpecs = spec[objectName].instance;
-    if (instanceMemberSpecs) {
-      // TODO(dglazkov): This will blow up for instances other than window.
-      instanceMemberSpecs.getter && instanceMemberSpecs.getter.forEach(function(getterName) {
-        redefineGetter(window, getterName, synthesizeNopeWhenWriting);
-      });
-    }
+    var objectSpecs = spec[objectName];
+    objectSpecs.getter && objectSpecs.getter.forEach(function(getterName) {
+      redefineGetter(window[objectName].prototype, getterName, synthesizeNopeWhenWriting);
+    });
+    objectSpecs.setter && objectSpecs.setter.forEach(function(setterName) {
+      redefineSetter(window[objectName].prototype, setterName, synthesizeNopeWhenWriting);
+    });
+    objectSpecs.method && objectSpecs.method.forEach(function(methodName) {
+      define(window[objectName].prototype, methodName, nope);
+    });
   });
 }
 
@@ -236,6 +205,15 @@ function redefineSetter(obj, key, setterSynthesizer) {
 
 }
 
+function overrideGetterSetter(obj, key, getter, setter) {
+  Object.defineProperty(obj, key, {
+    get: getter,
+    set: setter,
+    configurable: true,
+    enumerable: true
+  });
+}
+
 function define(obj, key, func) {
   Object.defineProperty(obj, key, {
     value: func,
@@ -248,7 +226,7 @@ function define(obj, key, func) {
 }
 
 var script = document.createElement('script');
-script.textContent = `~${nope}();`;
+script.textContent = `~${nope}(); document.currentScript.remove();`;
 document.documentElement.appendChild(script);
 
 
