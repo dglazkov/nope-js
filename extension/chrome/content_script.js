@@ -1,9 +1,5 @@
 var nope = function() {
 
-var WRITE_LIFECYCLE_MODE = "write";
-var knownLifecycleModes = [ "read", WRITE_LIFECYCLE_MODE ];
-var lifecycleMode = WRITE_LIFECYCLE_MODE;
-
 var terribleIdeas = {
   'HTMLDocument': {
     'method': [
@@ -144,52 +140,33 @@ var buggyWindowAccessors = [
   'scrollY',
 ];
 
-buggyWindowAccessors.forEach(function(accessor) {
-  overrideGetterSetter(window, accessor, nope, nope);
-});
 
-function nope() {
-  throw new Error('nope');
+function returnZero() {
+  return 0;
 }
 
-function synthesizeNopeWhenWriting(func) {
-  return function() {
-    if (lifecycleMode != WRITE_LIFECYCLE_MODE) {
-      return func.apply(this, arguments);
-    }
-    throw new Error('nope');
-  }
-}
+function nil() {
 
-define(HTMLDocument.prototype, 'setLifecycleMode', function(mode) {
-  if (knownLifecycleModes.indexOf(mode) == -1) {
-    throw new Error(`Unknown lifecycle mode. The known modes are: ${knownLifecycleModes}.`);
-    return;
-  }
-  lifecycleMode = mode;
-});
+}
 
 function processSpec(spec) {
   Object.keys(spec).forEach(function(objectName) {
     var objectSpecs = spec[objectName];
     objectSpecs.getter && objectSpecs.getter.forEach(function(getterName) {
-      redefineGetter(window[objectName].prototype, getterName, synthesizeNopeWhenWriting);
-    });
-    objectSpecs.setter && objectSpecs.setter.forEach(function(setterName) {
-      redefineSetter(window[objectName].prototype, setterName, synthesizeNopeWhenWriting);
+      redefineGetter(window[objectName].prototype, getterName, returnZero);
     });
     objectSpecs.method && objectSpecs.method.forEach(function(methodName) {
-      define(window[objectName].prototype, methodName, nope);
+      define(window[objectName].prototype, methodName, nil);
     });
   });
 }
 
-function redefineGetter(obj, key, getterSynthesizer) {
+function redefineGetter(obj, key, getter) {
   var descriptor = Object.getOwnPropertyDescriptor(obj, key);
   if (!descriptor || !descriptor.get)
     throw new Error(`Unable to redefine getter ${key} on ${obj.constructor}.`);
 
-  descriptor.get = getterSynthesizer(descriptor.get);
+  descriptor.get = getter;
 
   Object.defineProperty(obj, key, descriptor);
 }
