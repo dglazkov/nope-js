@@ -116,36 +116,37 @@ var layoutTriggers = {
 };
 
 processSpec(layoutTriggers);
-define(Element.prototype, 'getBoundingClientRect', returnEmptyClientRect);
-define(Range.prototype, 'getBoundingClientRect', returnEmptyClientRect);
+define(Element.prototype, 'getBoundingClientRect', synthesizeReturnEmptyClientRect('Element.getBoundingClientRect'));
+define(Range.prototype, 'getBoundingClientRect', synthesizeReturnEmptyClientRect('Range.getBoundingClientRect'));
 
-function returnZero() {
-  return 0;
-}
-
-function returnEmptyClientRect() {
-  return {
-    bottom: 0,
-    height: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    width: 0,
+function synthesizeReturnZero(memberName) {
+  return function() {
+    console.trace(`${memberName} returned 0`);
+    return 0;
   }
 }
 
-function doNothing() {
+function synthesizeReturnEmptyClientRect(memberName) {
+  return function() {
+    console.trace(`${memberName} returned empty ClientRect`);
+    return { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0 };
+  }
+}
 
+function synthesizeDoNothing(memberName) {
+  return function() {
+    console.trace(`${memberName} did nothing`);
+  }
 }
 
 function processSpec(spec) {
   Object.keys(spec).forEach(function(objectName) {
     var objectSpecs = spec[objectName];
     objectSpecs.getter && objectSpecs.getter.forEach(function(getterName) {
-      redefineGetter(window[objectName].prototype, getterName, returnZero);
+      redefineGetter(window[objectName].prototype, getterName, synthesizeReturnZero(`${objectName}.${getterName}`));
     });
     objectSpecs.method && objectSpecs.method.forEach(function(methodName) {
-      define(window[objectName].prototype, methodName, doNothing);
+      define(window[objectName].prototype, methodName, synthesizeDoNothing(`${objectName}.${methodName}`));
     });
   });
 }
