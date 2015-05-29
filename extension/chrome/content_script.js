@@ -40,7 +40,7 @@ var layoutTriggers = {
       'scrollIntoView',
       'scrollBy', // experimental
       'scrollTo', // experimental
-      'getClientRect',
+      'getClientRects',
       'getBoundingClientRect',
       'computedRole', // experimental
       'computedName', // experimental
